@@ -1,7 +1,11 @@
 import { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { MainMenu } from './components/MainMenu';
 import { CheckoutScreen } from './components/CheckoutScreen';
+import { AdminLogin } from './components/admin/AdminLogin';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+import { ProtectedRoute } from './components/admin/ProtectedRoute';
 import { Language, MilkType, DrinkSize } from './lib/data';
 
 export type AppScreen = 'welcome' | 'menu' | 'checkout';
@@ -124,31 +128,50 @@ export default function App() {
   };
 
   return (
-    <>
-      {screen === 'welcome' && (
-        <WelcomeScreen onSelectLanguage={handleSelectLanguage} />
-      )}
-      {screen === 'menu' && (
-        <MainMenu
-          language={language}
-          cart={cart}
-          onAddToCart={handleAddToCart}
-          onUpdateQuantity={handleUpdateQuantity}
-          onRemoveFromCart={handleRemoveFromCart}
-          onCheckout={handleCheckout}
-          onBackToWelcome={handleResetToWelcome}
+    <BrowserRouter>
+      <Routes>
+        {/* Public Client Routes */}
+        <Route path="/" element={
+          screen === 'welcome' ? (
+            <WelcomeScreen onSelectLanguage={handleSelectLanguage} />
+          ) : screen === 'menu' ? (
+            <MainMenu
+              language={language}
+              cart={cart}
+              onAddToCart={handleAddToCart}
+              onUpdateQuantity={handleUpdateQuantity}
+              onRemoveFromCart={handleRemoveFromCart}
+              onCheckout={handleCheckout}
+              onBackToWelcome={handleResetToWelcome}
+            />
+          ) : screen === 'checkout' && orderNumber ? (
+            <CheckoutScreen
+              language={language}
+              cart={cart}
+              orderNumber={orderNumber}
+              orderExtras={orderExtras}
+              onSetExtras={handleSetExtras}
+              onBackToMenu={handleBackToMenu}
+            />
+          ) : (
+            <WelcomeScreen onSelectLanguage={handleSelectLanguage} />
+          )
+        } />
+
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
         />
-      )}
-      {screen === 'checkout' && orderNumber && (
-        <CheckoutScreen
-          language={language}
-          cart={cart}
-          orderNumber={orderNumber}
-          orderExtras={orderExtras}
-          onSetExtras={handleSetExtras}
-          onBackToMenu={handleBackToMenu}
-        />
-      )}
-    </>
+        
+        {/* Catch all - redirect to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

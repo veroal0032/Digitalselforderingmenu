@@ -1,13 +1,28 @@
 import { motion } from 'motion/react';
-import { Languages } from 'lucide-react';
+import { Languages, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface WelcomeScreenProps {
   onSelectLanguage: (lang: 'en' | 'es') => void;
 }
 
 export function WelcomeScreen({ onSelectLanguage }: WelcomeScreenProps) {
+  const navigate = useNavigate();
+
   return (
     <div className="fixed inset-0 bg-[#F8F9F5] flex flex-col items-center justify-center p-8">
+      {/* Discrete Admin Button */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 0.5 }}
+        onClick={() => navigate('/admin/login')}
+        className="absolute top-4 right-4 p-2 text-[#155020]/20 hover:text-[#155020]/40 transition-colors"
+        title="Admin"
+      >
+        <Settings className="w-5 h-5" />
+      </motion.button>
+
       {/* Logo */}
       <motion.div
         initial={{ opacity: 0, y: -50 }}
