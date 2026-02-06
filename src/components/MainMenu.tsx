@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingCart, ArrowLeft } from 'lucide-react';
-import { Language, products, Category, MilkType, DrinkSize } from '../lib/data';
+import { ShoppingCart, ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
+import { Language, Category, MilkType, DrinkSize } from '../lib/data';
 import { translations } from '../lib/data';
 import { ProductCard } from './ProductCard';
 import { CategoryTabs } from './CategoryTabs';
 import { CartDrawer } from './CartDrawer';
 import { SweetsAnnouncement } from './SweetsAnnouncement';
 import { CartItem } from '../App';
+import { useProducts } from '../hooks/useProducts';
+import { useAppSettings } from '../hooks/useAppSettings';
 
 interface MainMenuProps {
   language: Language;
@@ -32,12 +34,48 @@ export function MainMenu({
   const [isCartOpen, setIsCartOpen] = useState(false);
   const t = translations[language];
 
+  // Load products and settings from Supabase
+  const { products, loading: productsLoading, error: productsError } = useProducts();
+  const { settings, loading: settingsLoading } = useAppSettings();
+
+  // Filter products by category
   const filteredProducts =
     activeCategory === 'all'
       ? products.filter((p) => p.category !== 'sweets')
       : products.filter((p) => p.category === activeCategory);
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Show loading state
+  if (productsLoading || settingsLoading) {
+    return (
+      <div className="min-h-screen bg-[#F8F9F5] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-[#155020] animate-spin mx-auto mb-4" />
+          <p className="text-[#155020] font-sans-brand">Cargando menú...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (productsError) {
+    return (
+      <div className="min-h-screen bg-[#F8F9F5] flex items-center justify-center p-6">
+        <div className="text-center max-w-md">
+          <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-serif text-[#155020] mb-2">Error al cargar el menú</h2>
+          <p className="text-[#155020]/60 font-sans-brand mb-4">{productsError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-[#155020] text-white px-6 py-3 rounded-lg font-sans-brand hover:bg-[#155020]/90 transition-colors"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F8F9F5] pb-24">

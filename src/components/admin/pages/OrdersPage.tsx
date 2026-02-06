@@ -9,18 +9,19 @@ import { OrderStatus } from '../../../types/admin';
  * Active orders page with filtering and real-time updates
  */
 export function OrdersPage() {
-  const { getOrdersByStatus, updateOrderStatus, cancelOrder } = useOrders();
+  const { getOrdersByStatus, updateOrderStatus, cancelOrder, loading, error, refreshOrders } = useOrders();
   const [activeFilter, setActiveFilter] = useState<OrderStatus | 'all'>('all');
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
-  // Auto-refresh every 10 seconds
+  // Auto-refresh every 30 seconds
   useEffect(() => {
     const interval = setInterval(() => {
+      refreshOrders();
       setLastRefresh(new Date());
-    }, 10000);
+    }, 30000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshOrders]);
 
   const filteredOrders = getOrdersByStatus(activeFilter);
 
@@ -32,8 +33,8 @@ export function OrdersPage() {
   ];
 
   const handleRefresh = () => {
+    refreshOrders();
     setLastRefresh(new Date());
-    // In production, this would trigger a refetch from the API
   };
 
   return (

@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, LogOut, User, ChevronDown } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
-import { projectId, publicAnonKey } from '../../../utils/supabase/info';
+import { supabase } from '../../../lib/supabaseClient';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -23,11 +22,6 @@ export function Header({ onMenuClick }: HeaderProps) {
   const [adminEmail, setAdminEmail] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  const supabase = createClient(
-    `https://${projectId}.supabase.co`,
-    publicAnonKey
-  );
 
   useEffect(() => {
     loadAdminInfo();

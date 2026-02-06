@@ -27,7 +27,6 @@ export default function App() {
   const [screen, setScreen] = useState<AppScreen>('welcome');
   const [language, setLanguage] = useState<Language>('en');
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [orderNumber, setOrderNumber] = useState<number | null>(null);
   const [orderExtras, setOrderExtras] = useState<OrderExtras>({
     collagen: false,
     ashwagandha: false,
@@ -103,9 +102,6 @@ export default function App() {
   };
 
   const handleCheckout = () => {
-    // Generate random 3-digit order number
-    const randomOrderNumber = Math.floor(Math.random() * 900) + 100;
-    setOrderNumber(randomOrderNumber);
     setScreen('checkout');
   };
 
@@ -115,14 +111,12 @@ export default function App() {
 
   const handleBackToMenu = () => {
     setCart([]);
-    setOrderNumber(null);
     setOrderExtras({ collagen: false, ashwagandha: false, honey: false });
     setScreen('menu');
   };
 
   const handleResetToWelcome = () => {
     setCart([]);
-    setOrderNumber(null);
     setOrderExtras({ collagen: false, ashwagandha: false, honey: false });
     setScreen('welcome');
   };
@@ -144,11 +138,10 @@ export default function App() {
               onCheckout={handleCheckout}
               onBackToWelcome={handleResetToWelcome}
             />
-          ) : screen === 'checkout' && orderNumber ? (
+          ) : screen === 'checkout' ? (
             <CheckoutScreen
               language={language}
               cart={cart}
-              orderNumber={orderNumber}
               orderExtras={orderExtras}
               onSetExtras={handleSetExtras}
               onBackToMenu={handleBackToMenu}

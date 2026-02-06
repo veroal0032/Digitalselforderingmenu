@@ -1,8 +1,9 @@
 import { motion } from 'motion/react';
 import { Plus } from 'lucide-react';
-import { Language, Product, translations, MilkType, DrinkSize } from '../lib/data';
+import { Language, translations, MilkType, DrinkSize } from '../lib/data';
 import { useState } from 'react';
 import { MilkSelectionModal } from './MilkSelectionModal';
+import { Product } from '../hooks/useProducts';
 
 interface ProductCardProps {
   product: Product;
@@ -14,10 +15,11 @@ interface ProductCardProps {
 export function ProductCard({ product, language, onAddToCart, index }: ProductCardProps) {
   const [showMilkModal, setShowMilkModal] = useState(false);
   const t = translations[language];
-  const productInfo = t.products[product.nameKey];
+  // name_key from database, e.g., 'matchaLatte'
+  const productInfo = t.products[product.name_key as keyof typeof t.products];
 
   const handleAddClick = () => {
-    if (product.requiresMilk) {
+    if (product.requires_milk) {
       setShowMilkModal(true);
     } else {
       onAddToCart(product.id);
@@ -27,6 +29,10 @@ export function ProductCard({ product, language, onAddToCart, index }: ProductCa
   const handleMilkConfirm = (milk: MilkType, size: DrinkSize) => {
     onAddToCart(product.id, milk, size);
   };
+
+  // If product info not found in translations, show generic info
+  const displayName = productInfo?.name || product.name_key;
+  const displayDescription = productInfo?.description || '';
 
   return (
     <motion.div
@@ -50,8 +56,8 @@ export function ProductCard({ product, language, onAddToCart, index }: ProductCa
         className="relative aspect-[4/3] overflow-hidden bg-gray-100"
       >
         <img
-          src={product.image}
-          alt={productInfo.name}
+          src={product.image_url}
+          alt={displayName}
           className="w-full h-full object-cover"
         />
         
@@ -66,10 +72,10 @@ export function ProductCard({ product, language, onAddToCart, index }: ProductCa
       {/* Product Info */}
       <div className="p-6">
         <h3 className="font-[Abril_Fatface] text-2xl text-[#155020] mb-2">
-          {productInfo.name}
+          {displayName}
         </h3>
         <p className="font-sans-brand text-gray-600 text-sm mb-6 leading-relaxed">
-          {productInfo.description}
+          {displayDescription}
         </p>
 
         {/* Add Button */}
