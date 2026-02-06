@@ -36,7 +36,7 @@ export function OverviewPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto">
       {/* Welcome Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

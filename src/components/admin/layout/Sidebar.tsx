@@ -33,10 +33,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         initial={{ x: -280 }}
         animate={{ x: isOpen ? 0 : -280 }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed left-0 top-0 h-full w-72 bg-white border-r border-gray-200 z-50 lg:translate-x-0 lg:static"
+        className="fixed left-0 top-0 h-screen w-72 bg-white border-r border-gray-200 z-50 lg:translate-x-0 lg:static overflow-y-auto"
       >
         {/* Logo */}
-        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div className="p-6 border-b border-gray-200 flex items-center justify-between shrink-0">
           <div>
             <h2 className="font-[Abril_Fatface] text-2xl text-[#155020] tracking-tight">
               MATCHA CHÁ

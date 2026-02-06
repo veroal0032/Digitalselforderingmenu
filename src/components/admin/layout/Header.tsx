@@ -49,29 +49,29 @@ export function Header({ onMenuClick }: HeaderProps) {
   const pageTitle = pageTitles[location.pathname] || 'Admin Panel';
 
   return (
-    <header className="bg-[#155020] text-white shadow-lg sticky top-0 z-30">
-      <div className="px-6 py-4 flex items-center justify-between">
+    <header className="bg-[#155020] text-white shadow-lg sticky top-0 z-30 shrink-0">
+      <div className="px-4 sm:px-6 py-4 flex items-center justify-between">
         {/* Left: Menu button + Title */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <button
             onClick={onMenuClick}
-            className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors shrink-0"
           >
             <Menu className="w-6 h-6" />
           </button>
 
-          <div>
-            <h1 className="font-[Abril_Fatface] text-2xl md:text-3xl tracking-tight">
+          <div className="min-w-0">
+            <h1 className="font-[Abril_Fatface] text-xl sm:text-2xl md:text-3xl tracking-tight truncate">
               MATCHA CHÁ
             </h1>
-            <p className="text-[#C8D96F] text-sm font-sans-brand hidden md:block">
+            <p className="text-[#C8D96F] text-sm font-sans-brand hidden md:block truncate">
               {pageTitle}
             </p>
           </div>
         </div>
 
         {/* Right: User dropdown */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}

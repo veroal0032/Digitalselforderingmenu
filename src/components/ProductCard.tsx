@@ -95,7 +95,7 @@ export function ProductCard({ product, language, onAddToCart, index }: ProductCa
         onClose={() => setShowMilkModal(false)}
         onConfirm={handleMilkConfirm}
         language={language}
-        productName={productInfo.name}
+        productName={displayName}
       />
     </motion.div>
   );

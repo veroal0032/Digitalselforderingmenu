@@ -43,7 +43,7 @@ export function InventoryPage() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
+      <div className="w-full max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[#155020] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-[#155020]/60 font-sans-brand">Cargando inventario...</p>
@@ -53,7 +53,7 @@ export function InventoryPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

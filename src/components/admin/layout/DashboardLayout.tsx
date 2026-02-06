@@ -28,12 +28,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-h-screen lg:ml-0">
-        {/* Header */}
+      <div className="flex-1 flex flex-col min-h-screen">
+        {/* Header - Sticky at top */}
         <Header onMenuClick={toggleSidebar} />
 
-        {/* Page content with animations */}
-        <main className="flex-1 overflow-x-hidden">
+        {/* Page content with animations - Allow scroll */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -41,7 +41,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="p-6 md:p-8"
+              className="p-4 sm:p-6 lg:p-8 w-full max-w-full"
             >
               {children}
             </motion.div>

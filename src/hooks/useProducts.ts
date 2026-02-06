@@ -13,7 +13,7 @@ export interface Product {
 }
 
 /**
- * Hook for loading products from Supabase
+ * Hook for fetching products for the customer-facing menu
  */
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -22,6 +22,26 @@ export function useProducts() {
 
   useEffect(() => {
     loadProducts();
+
+    // Set up real-time subscription for product updates
+    const channel = supabase
+      .channel('products_changes_customer')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'products',
+        },
+        () => {
+          loadProducts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadProducts = async () => {
@@ -29,6 +49,7 @@ export function useProducts() {
       setLoading(true);
       setError(null);
 
+      // Only fetch available products for customers
       const { data, error: fetchError } = await supabase
         .from('products')
         .select('*')
@@ -38,27 +59,23 @@ export function useProducts() {
 
       if (fetchError) {
         console.error('Error loading products:', fetchError);
-        setError('Error al cargar productos');
+        setError('Error al cargar productos. Por favor, intente de nuevo.');
         return;
       }
 
       setProducts(data || []);
     } catch (err) {
       console.error('Unexpected error loading products:', err);
-      setError('Error inesperado al cargar productos');
+      setError('Error inesperado al cargar productos.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const refreshProducts = () => {
-    loadProducts();
   };
 
   return {
     products,
     loading,
     error,
-    refreshProducts,
+    refreshProducts: loadProducts,
   };
 }

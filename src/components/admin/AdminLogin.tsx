@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Lock, Mail, AlertCircle, Loader2 } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 
 export function AdminLogin() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -86,8 +87,7 @@ export function AdminLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-11 pr-4 py-3 border-2 border-[#155020]/20 rounded-lg font-sans-brand focus:outline-none focus:border-[#155020] transition-colors"
-                  placeholder="admin@matchacha.com"
+                  className="w-full pl-11 pr-4 py-3 border-2 border-[#155020]/20 rounded-lg font-sans-brand focus:outline-none focus:border-[#155020] focus:ring-2 focus:ring-[#155020]/20 transition-all"
                   disabled={loading}
                 />
               </div>
@@ -102,14 +102,26 @@ export function AdminLogin() {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#155020]/40" />
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-11 pr-4 py-3 border-2 border-[#155020]/20 rounded-lg font-sans-brand focus:outline-none focus:border-[#155020] transition-colors"
-                  placeholder="••••••••"
+                  className="w-full pl-11 pr-12 py-3 border-2 border-[#155020]/20 rounded-lg font-sans-brand focus:outline-none focus:border-[#155020] focus:ring-2 focus:ring-[#155020]/20 transition-all"
                   disabled={loading}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={loading}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-[#155020]/10 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5 text-[#155020]/60" />
+                  ) : (
+                    <Eye className="w-5 h-5 text-[#155020]/60" />
+                  )}
+                </button>
               </div>
             </div>
 
