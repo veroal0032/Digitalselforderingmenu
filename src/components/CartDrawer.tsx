@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
-import { Language, products, translations, MilkType, DrinkSize } from '../lib/data';
+import { Language, translations, MilkType, DrinkSize } from '../lib/data';
+import type { Product } from '../hooks/useProducts';
 import { CartItem } from '../App';
 
 interface CartDrawerProps {
@@ -8,6 +9,8 @@ interface CartDrawerProps {
   onClose: () => void;
   language: Language;
   cart: CartItem[];
+  products: Product[];
+settings?: any;
   onUpdateQuantity: (productId: string, delta: number, milk?: MilkType, size?: DrinkSize) => void;
   onRemoveFromCart: (productId: string, milk?: MilkType, size?: DrinkSize) => void;
   onCheckout: () => void;
@@ -18,25 +21,28 @@ export function CartDrawer({
   onClose,
   language,
   cart,
+  products,
+  settings,
   onUpdateQuantity,
   onRemoveFromCart,
   onCheckout,
 }: CartDrawerProps) {
   const t = translations[language];
 
-  const cartWithProducts = cart.map((item) => {
-    const product = products.find((p) => p.id === item.productId)!;
+const cartWithProducts = cart
+  .map((item) => {
+    const product = products.find((p) => p.id === item.productId);
     return { ...item, product };
-  });
+  })
+  .filter((item) => !!item.product);
 
-  const total = cartWithProducts.reduce((sum, item) => {
-    let itemPrice = item.product.price;
-    // Add $1 for large size
-    if (item.size === 'large') {
-      itemPrice += 1.00;
-    }
-    return sum + itemPrice * item.quantity;
-  }, 0);
+const total = cartWithProducts.reduce((sum, item) => {
+  let itemPrice = item.product!.price;
+  if (item.size === 'large') {
+    itemPrice += (settings?.large_size_extra ?? 1);
+  }
+  return sum + itemPrice * item.quantity;
+}, 0);
 
   const isEmpty = cart.length === 0;
 
@@ -100,8 +106,11 @@ export function CartDrawer({
               ) : (
                 <div className="space-y-4">
                   {cartWithProducts.map((item, index) => {
-                    const productInfo = t.products[item.product.nameKey];
-                    const itemPrice = item.product.price + (item.size === 'large' ? 1.00 : 0);
+                    const productInfo =
+  t.products[item.product!.name_key as keyof typeof t.products];
+
+const itemPrice =
+  item.product!.price + (item.size === 'large' ? (settings?.large_size_extra ?? 1) : 0);
                     const cartKey = `${item.productId}-${item.milk || 'none'}-${item.size || 'none'}`;
                     
                     return (
@@ -121,16 +130,16 @@ export function CartDrawer({
                         {/* Product Image */}
                         <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
                           <img
-                            src={item.product.image}
-                            alt={productInfo.name}
-                            className="w-full h-full object-cover"
-                          />
+  src={item.product!.image_url}
+  alt={productInfo?.name ?? item.product!.name_key}
+  className="w-full h-full object-cover"
+/>
                         </div>
 
                         {/* Product Info */}
                         <div className="flex-1 min-w-0">
                           <h4 className="font-sans-brand font-semibold text-[#155020] mb-1 truncate">
-                            {productInfo.name}
+                            {productInfo?.name ?? item.product!.name_key}
                           </h4>
                           {item.milk && (
                             <p className="font-sans-brand text-xs text-[#155020]/60 mb-1">
