@@ -130,7 +130,7 @@ export function CartDrawer({
                         {/* Product Info */}
                         <div className="flex-1 min-w-0">
                           <h4 className="font-sans-brand font-semibold text-[#155020] mb-1 truncate">
-                            {productInfo.name}
+                            {productInfo?.name ?? item.product!.name_key}
                           </h4>
                           {item.milk && (
                             <p className="font-sans-brand text-xs text-[#155020]/60 mb-1">
