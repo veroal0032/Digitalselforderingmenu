@@ -36,15 +36,18 @@ const cartWithProducts = cart
   })
   .filter((item) => !!item.product);
 
-const total = cartWithProducts.reduce((sum, item) => {
-  let itemPrice = item.product!.price;
+const total = cart.reduce((sum, item) => {
+  const product = products.find((p) => p.id === item.productId);
+  if (!product) return sum; // <- evita el crash
+
+  let itemPrice = product.price ?? 0;
   if (item.size === 'large') {
     itemPrice += (settings?.large_size_extra ?? 1);
   }
+
   return sum + itemPrice * item.quantity;
 }, 0);
-
-  const isEmpty = cartWithProducts.length === 0;
+const isEmpty = cartWithProducts.length === 0;
 
   return (
     <>
@@ -139,11 +142,11 @@ const itemPrice =
                         {/* Product Info */}
                         <div className="flex-1 min-w-0">
                           <h4 className="font-sans-brand font-semibold text-[#155020] mb-1 truncate">
-                            {productInfo?.name ?? item.product!.name_key}
+                            {productInfo.name}
                           </h4>
                           {item.milk && (
                             <p className="font-sans-brand text-xs text-[#155020]/60 mb-1">
-                              {t.milkSelection[item.milk]} • {t.milkSelection[item.size!]}
+                              {t.milkSelection[item.milk]}{item.size ? ` • ${item.size}` : ''}
                             </p>
                           )}
                           <p className="font-sans-brand text-sm text-gray-600 mb-3">
