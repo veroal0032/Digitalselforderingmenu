@@ -44,7 +44,7 @@ const total = cartWithProducts.reduce((sum, item) => {
   return sum + itemPrice * item.quantity;
 }, 0);
 
-  const isEmpty = cart.length === 0;
+  const isEmpty = cartWithProducts.length === 0;
 
   return (
     <>
