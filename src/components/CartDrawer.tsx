@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
-import { Language, translations, MilkType, DrinkSize } from '../lib/data';
-import type { Product } from '../hooks/useProducts';
+import { Language, products, translations, MilkType, DrinkSize } from '../lib/data';
 import { CartItem } from '../App';
 
 interface CartDrawerProps {
@@ -9,8 +8,6 @@ interface CartDrawerProps {
   onClose: () => void;
   language: Language;
   cart: CartItem[];
-  products: Product[];
-settings?: any;
   onUpdateQuantity: (productId: string, delta: number, milk?: MilkType, size?: DrinkSize) => void;
   onRemoveFromCart: (productId: string, milk?: MilkType, size?: DrinkSize) => void;
   onCheckout: () => void;
@@ -21,34 +18,27 @@ export function CartDrawer({
   onClose,
   language,
   cart,
-  products,
-  settings,
   onUpdateQuantity,
   onRemoveFromCart,
   onCheckout,
 }: CartDrawerProps) {
   const t = translations[language];
 
-const cartWithProducts = cart
-  .map((item) => {
-    const product = products.find((p) => p.id === item.productId);
+  const cartWithProducts = cart.map((item) => {
+    const product = products.find((p) => p.id === item.productId)!;
     return { ...item, product };
-  })
-  .filter((item) => !!item.product);
+  });
 
-const total = cart.reduce((sum, item) => {
-  const product = products.find((p) => p.id === item.productId);
-  if (!product) return sum;
+  const total = cartWithProducts.reduce((sum, item) => {
+    let itemPrice = item.product.price;
+    // Add $1 for large size
+    if (item.size === 'large') {
+      itemPrice += 1.00;
+    }
+    return sum + itemPrice * item.quantity;
+  }, 0);
 
-  let itemPrice = product.price ?? 0;
-  if (item.size === 'large') {
-    itemPrice += (settings?.large_size_extra ?? 1);
-  }
-
-  return sum + itemPrice * item.quantity;
-}, 0);
-
-const isEmpty = cartWithProducts.length === 0;
+  const isEmpty = cart.length === 0;
 
   return (
     <>
@@ -110,9 +100,8 @@ const isEmpty = cartWithProducts.length === 0;
               ) : (
                 <div className="space-y-4">
                   {cartWithProducts.map((item, index) => {
-                    const productInfo = t.products[item.product!.name_key as keyof typeof t.products];
-                    const itemPrice =
-                    item.product!.price + (item.size === 'large' ? (settings?.large_size_extra ?? 1) : 0);
+                    const productInfo = t.products[item.product.nameKey];
+                    const itemPrice = item.product.price + (item.size === 'large' ? 1.00 : 0);
                     const cartKey = `${item.productId}-${item.milk || 'none'}-${item.size || 'none'}`;
                     
                     return (
@@ -132,8 +121,8 @@ const isEmpty = cartWithProducts.length === 0;
                         {/* Product Image */}
                         <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
                           <img
-                            src={item.product!.image_url}
-                            alt={productInfo?.name ?? item.product!.name_key}
+                            src={item.product.image}
+                            alt={productInfo.name}
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -141,11 +130,11 @@ const isEmpty = cartWithProducts.length === 0;
                         {/* Product Info */}
                         <div className="flex-1 min-w-0">
                           <h4 className="font-sans-brand font-semibold text-[#155020] mb-1 truncate">
-                            {productInfo?.name ?? item.product!.name_key}
+                            {productInfo.name}
                           </h4>
                           {item.milk && (
                             <p className="font-sans-brand text-xs text-[#155020]/60 mb-1">
-                              {t.milkSelection[item.milk]}{item.size ? ` • ${item.size}` : ''}
+                              {t.milkSelection[item.milk]} • {t.milkSelection[item.size!]}
                             </p>
                           )}
                           <p className="font-sans-brand text-sm text-gray-600 mb-3">

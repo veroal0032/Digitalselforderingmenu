@@ -167,8 +167,6 @@ export function MainMenu({
         onClose={() => setIsCartOpen(false)}
         language={language}
         cart={cart}
-        products={products}
-        settings={settings}
         onUpdateQuantity={onUpdateQuantity}
         onRemoveFromCart={onRemoveFromCart}
         onCheckout={() => {
